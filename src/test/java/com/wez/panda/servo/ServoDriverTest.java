@@ -19,7 +19,7 @@ public class ServoDriverTest {
 
         Thread thread = new Thread(driver);
         thread.start();
-        TimeUnit.SECONDS.sleep(10);
+        TimeUnit.SECONDS.sleep(5);
         driver.terminate();
         TimeUnit.SECONDS.sleep(1);
         Assert.assertFalse(thread.isAlive());

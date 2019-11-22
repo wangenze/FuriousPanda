@@ -1,12 +1,12 @@
 package com.wez.panda;
 
 import com.wez.panda.servo.IServoDriver;
-import com.wez.panda.servo.SerialServoDriver;
 import com.wez.panda.servo.Servo;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.Validate;
 
 import java.util.HashSet;
 import java.util.List;
@@ -15,8 +15,6 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
-
-import static com.wez.panda.Resources.DEFAULT_SERVOS;
 
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 public class PandaDriver {
@@ -31,7 +29,7 @@ public class PandaDriver {
     private Set<IServoDriver> drivers = new HashSet<>();
 
     public static Builder builder() {
-        return new Builder().servos(DEFAULT_SERVOS).servoDriverFactory(SerialServoDriver::new);
+        return new Builder();
     }
 
     public synchronized void start() {
@@ -39,13 +37,16 @@ public class PandaDriver {
             if (executorService != null) {
                 return;
             }
-            executorService = Executors.newFixedThreadPool(servos.size());
             drivers.clear();
             for (Servo servo : servos) {
                 IServoDriver servoDriver = servoDriverFactory.apply(servo);
                 drivers.add(servoDriver);
-                executorService.submit(servoDriver);
+
             }
+            drivers.stream().parallel().forEach(IServoDriver::initialize);
+
+            executorService = Executors.newFixedThreadPool(servos.size());
+            drivers.forEach(executorService::submit);
         }
     }
 
@@ -76,7 +77,7 @@ public class PandaDriver {
     }
 
     public static class Builder {
-        private Function<Servo, IServoDriver> servoDriverFactory;
+        private Function<Servo, IServoDriver> servoDriverFactory = IServoDriver.EmptyDriver::new;
         private List<Servo> servos;
 
         public Builder servoDriverFactory(Function<Servo, IServoDriver> servoDriverFactory) {
@@ -90,6 +91,7 @@ public class PandaDriver {
         }
 
         public PandaDriver build() {
+            Validate.notEmpty(servos);
             return new PandaDriver(servos, servoDriverFactory);
         }
     }

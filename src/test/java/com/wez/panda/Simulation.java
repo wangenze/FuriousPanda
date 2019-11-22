@@ -26,7 +26,10 @@ public class Simulation extends PApplet {
     @Override
     public void settings() {
         size(1000, 800);
-        PandaDriver pandaDriver = PandaDriver.builder().servoDriverFactory(MockingServoDriver::new).build();
+        PandaDriver pandaDriver = PandaDriver.builder()
+                .servos(Resources.getAllServosForTesting())
+                .servoDriverFactory(MockingServoDriver::new)
+                .build();
         pandaDriver.start();
         lines.addAll(StreamEx.of(pandaDriver.getServos()).map(Line::new).toList());
     }
@@ -64,7 +67,6 @@ public class Simulation extends PApplet {
             stroke(255);
             strokeWeight(4);
             line(center.x, center.y, dir.x, dir.y);
-            System.out.println(servo.getName() + " " + dir);
         }
     }
 

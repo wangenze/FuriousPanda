@@ -32,14 +32,17 @@ public abstract class AServoDriver implements IServoDriver {
     private ServoDataConverter dataConverter = new ServoDataConverter();
 
     @Override
-    public void run() {
-        // Resetting position
+    public void initialize() {
         try {
             syncOperate(getData().value(0));
-            // TODO: Blocking or non-blocking?
         } catch (InterruptedException ie) {
             Thread.currentThread().interrupt();
         }
+    }
+
+    @Override
+    public void run() {
+
         final double offset = now();
 
         // Starting from initial position
