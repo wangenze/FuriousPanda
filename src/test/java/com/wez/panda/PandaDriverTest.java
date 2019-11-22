@@ -10,7 +10,7 @@ public class PandaDriverTest {
 
     @Test
     public void testPandaDriver() throws Exception {
-        PandaDriver pandaDriver = new PandaDriver();
+        PandaDriver pandaDriver = PandaDriver.builder().build();
         // Start
         pandaDriver.start();
         TimeUnit.SECONDS.sleep(5);
@@ -29,7 +29,9 @@ public class PandaDriverTest {
 
     @Test
     public void testSingleServo() throws Exception {
-        PandaDriver pandaDriver = new PandaDriver(Collections.singletonList(Servo.of(1, "S1", "servo1.csv")));
+        PandaDriver pandaDriver = PandaDriver.builder()
+                .servos(Collections.singletonList(Servo.of("LB_KN", "LB_KN.csv")))
+                .build();
         // Start
         pandaDriver.start();
         TimeUnit.SECONDS.sleep(15);

@@ -1,34 +1,37 @@
 package com.wez.panda;
 
+import com.wez.panda.servo.IServoDriver;
+import com.wez.panda.servo.SerialServoDriver;
 import com.wez.panda.servo.Servo;
-import com.wez.panda.servo.ServoDriver;
+import lombok.AccessLevel;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
 
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Function;
 
-@NoArgsConstructor
+import static com.wez.panda.Resources.DEFAULT_SERVOS;
+
+@RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 public class PandaDriver {
 
-    public static final List<Servo> DEFAULT_SERVOS = Arrays.asList(
-            Servo.of(1, "S1", "servo1.csv"),
-            Servo.of(2, "S2", "servo2.csv")
-    );
-
     @Getter
-    private List<Servo> servos = DEFAULT_SERVOS;
+    @NonNull
+    private List<Servo> servos;
+    @NonNull
+    private Function<Servo, IServoDriver> servoDriverFactory;
 
     private ExecutorService executorService = null;
-    private Set<ServoDriver> drivers = new HashSet<>();
+    private Set<IServoDriver> drivers = new HashSet<>();
 
-    public PandaDriver(List<Servo> servos) {
-        this.servos = servos;
+    public static Builder builder() {
+        return new Builder().servos(DEFAULT_SERVOS).servoDriverFactory(SerialServoDriver::new);
     }
 
     public synchronized void start() {
@@ -39,7 +42,7 @@ public class PandaDriver {
             executorService = Executors.newFixedThreadPool(servos.size());
             drivers.clear();
             for (Servo servo : servos) {
-                ServoDriver servoDriver = new ServoDriver(servo);
+                IServoDriver servoDriver = servoDriverFactory.apply(servo);
                 drivers.add(servoDriver);
                 executorService.submit(servoDriver);
             }
@@ -51,7 +54,7 @@ public class PandaDriver {
             if (executorService == null) {
                 return;
             }
-            for (ServoDriver driver : drivers) {
+            for (IServoDriver driver : drivers) {
                 try {
                     driver.terminate();
                 } catch (Exception e) {
@@ -69,6 +72,25 @@ public class PandaDriver {
                 executorService.shutdownNow();
                 Thread.currentThread().interrupt();
             }
+        }
+    }
+
+    public static class Builder {
+        private Function<Servo, IServoDriver> servoDriverFactory;
+        private List<Servo> servos;
+
+        public Builder servoDriverFactory(Function<Servo, IServoDriver> servoDriverFactory) {
+            this.servoDriverFactory = servoDriverFactory;
+            return this;
+        }
+
+        public Builder servos(List<Servo> servos) {
+            this.servos = servos;
+            return this;
+        }
+
+        public PandaDriver build() {
+            return new PandaDriver(servos, servoDriverFactory);
         }
     }
 }

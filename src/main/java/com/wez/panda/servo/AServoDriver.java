@@ -16,7 +16,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 @AllArgsConstructor
 @RequiredArgsConstructor
-public class ServoDriver implements Runnable {
+public abstract class AServoDriver implements IServoDriver {
 
     private static final double MILLIS_PER_SEC = (double) TimeUnit.SECONDS.toMillis(1);
 
@@ -33,11 +33,9 @@ public class ServoDriver implements Runnable {
 
     @Override
     public void run() {
-        ServoOperator operator = new ServoOperator(getServo());
-
         // Resetting position
         try {
-            operator.operate(getData().value(0));
+            syncOperate(getData().value(0));
             // TODO: Blocking or non-blocking?
         } catch (InterruptedException ie) {
             Thread.currentThread().interrupt();
@@ -47,15 +45,22 @@ public class ServoDriver implements Runnable {
         // Starting from initial position
         while (!terminated.get() && !Thread.currentThread().isInterrupted()) {
             try {
-                operator.operate(getData().value(now() - offset));
+                syncOperate(getData().value(now() - offset));
             } catch (InterruptedException ie) {
                 Thread.currentThread().interrupt();
             }
         }
     }
 
+    @Override
     public void terminate() {
         terminated.set(true);
+    }
+
+    protected abstract void operate(double pos) throws InterruptedException;
+
+    private synchronized void syncOperate(double pos) throws InterruptedException {
+        this.operate(pos);
     }
 
     private UnivariateFunction loadData() {

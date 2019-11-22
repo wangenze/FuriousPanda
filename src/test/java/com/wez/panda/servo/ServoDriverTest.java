@@ -1,7 +1,6 @@
 package com.wez.panda.servo;
 
 import org.junit.Assert;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import java.util.concurrent.TimeUnit;
@@ -9,12 +8,14 @@ import java.util.concurrent.TimeUnit;
 public class ServoDriverTest {
 
     @Test
-    @Ignore
     public void testServoDriver() throws Exception {
-        ServoDriver driver = new ServoDriver(Servo.of(1, "S1", "servo1.csv"));
-//        for (int i = 0; i < 7000; i++) {
-//            System.out.println(String.format("%5d, %.3f", i, driver.getData().value(i / 1000.0)));
-//        }
+        IServoDriver driver = new AServoDriver(Servo.of("LB_KN", "LB_KN.csv")) {
+            @Override
+            protected void operate(double pos) throws InterruptedException {
+                System.out.println(String.format("Servo %s operating to position %.3f", getServo().getName(), pos));
+                TimeUnit.MILLISECONDS.sleep(100);
+            }
+        };
 
         Thread thread = new Thread(driver);
         thread.start();

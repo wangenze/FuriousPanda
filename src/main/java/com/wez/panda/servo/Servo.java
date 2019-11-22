@@ -1,12 +1,15 @@
 package com.wez.panda.servo;
 
 import lombok.AllArgsConstructor;
-import lombok.Value;
+import lombok.Data;
+import lombok.RequiredArgsConstructor;
 
-@Value
+@Data
 @AllArgsConstructor(staticName = "of")
+@RequiredArgsConstructor(staticName = "of")
 public class Servo {
-    private int id;
-    private String name;
-    private String dataFilePath;
+    private final String name;
+    private final String dataFilePath;
+
+    private double offset = 0d;
 }
