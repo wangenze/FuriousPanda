@@ -18,12 +18,12 @@ public class SerialControllerTest {
         }).when(serial).write(anyInt());
         SerialController serialController = new SerialController(serial);
 
-        int message = 1000;
+        int message = 4321;
         System.out.println("Sending message: " + toBinaryString(message));
-        serialController.send(1000);
+        serialController.send(message);
     }
 
     private String toBinaryString(int i) {
-        return StringUtils.leftPad(Integer.toBinaryString(i), 8, '0');
+        return StringUtils.leftPad(Integer.toBinaryString(i), 16, '0');
     }
 }
