@@ -17,8 +17,8 @@ public class Main extends PApplet {
     @Override
     public void settings() {
         Servo servo1 = Servo.builder()
-                .name("LB_KN")
-                .dataFilePath("C:\\Users\\wange\\IdeaProjects\\FuriousPanda\\src\\test\\resources\\LB_KN.csv")
+                .name("RF_SD")
+                .dataFilePath("C:\\Users\\wange\\IdeaProjects\\FuriousPanda\\src\\test\\resources\\RF_SD.csv")
                 .offsetDegrees(0d)
                 .transmissionRatio(1)
                 .serial(new Serial(this, "COM1"))

@@ -47,7 +47,7 @@ public class SerialServoDriver extends AServoDriver {
 
     private int calculateStep(final double targetAngle) {
         Position position = current.updateAndGet(currentPos -> {
-            double oriAngle = currentPos.getPos() * PERIOD / conversionRatio;
+            double oriAngle = MathUtils.reduce(currentPos.getPos() * PERIOD / conversionRatio, PERIOD, 0d);
             double newAngle = MathUtils.reduce(targetAngle, PERIOD, 0d);
             double angleStep = newAngle - oriAngle;
             if (angleStep <= -HALF_PERIOD) {
@@ -57,6 +57,15 @@ public class SerialServoDriver extends AServoDriver {
             }
             int step = (int) FastMath.round(angleStep * conversionRatio / PERIOD);
             int newPos = currentPos.getPos() + step;
+
+//            System.out.println("Ori angle: " + oriAngle);
+//            System.out.println("New angle: " + newAngle);
+//            System.out.println("Angle Step: " + angleStep);
+//
+//            System.out.println("Ori pos: " + currentPos.getPos());
+//            System.out.println("New pos: " + newPos);
+//
+//            System.out.println("Step: " + step);
             return new Position(newPos, step);
         });
         return position.step;

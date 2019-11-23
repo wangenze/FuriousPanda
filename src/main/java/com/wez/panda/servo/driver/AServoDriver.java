@@ -10,7 +10,6 @@ import lombok.RequiredArgsConstructor;
 import org.apache.commons.math3.analysis.UnivariateFunction;
 import org.apache.commons.math3.util.Pair;
 
-import java.util.Calendar;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -74,6 +73,6 @@ public abstract class AServoDriver implements IServoDriver {
     }
 
     private double now() {
-        return Calendar.getInstance().getTimeInMillis() / MILLIS_PER_SEC;
+        return System.currentTimeMillis() / MILLIS_PER_SEC;
     }
 }
