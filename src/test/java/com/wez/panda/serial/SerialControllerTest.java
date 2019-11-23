@@ -13,13 +13,13 @@ public class SerialControllerTest {
         Serial serial = mock(Serial.class);
         doAnswer(invocation -> {
             int val = invocation.getArgument(0);
-            System.out.println("Serial write: " + toBinaryString(val));
+            System.out.println("Write to serial:\t" + toBinaryString(val));
             return null;
         }).when(serial).write(anyInt());
         SerialController serialController = new SerialController(serial);
 
         int message = 4321;
-        System.out.println("Sending message: " + toBinaryString(message));
+        System.out.println("Sending message:\t" + toBinaryString(message));
         serialController.send(message);
     }
 
