@@ -9,11 +9,10 @@ import org.apache.commons.math3.util.MathUtils;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
-public class SerialServoDriver extends AServoDriver {
+import static com.wez.panda.math.RotatingAngleInterpolator.HALF_PERIOD;
+import static com.wez.panda.math.RotatingAngleInterpolator.PERIOD;
 
-    // Angle should be between 0 and 360
-    private static final int PERIOD = 360;
-    private static final int HALF_PERIOD = 180;
+public class SerialServoDriver extends AServoDriver {
 
     private static final double SERVO_SIGNAL_RANGE = 5000;
 
@@ -49,12 +48,8 @@ public class SerialServoDriver extends AServoDriver {
         Position position = current.updateAndGet(currentPos -> {
             double oriAngle = MathUtils.reduce(currentPos.getPos() * PERIOD / conversionRatio, PERIOD, 0d);
             double newAngle = MathUtils.reduce(targetAngle, PERIOD, 0d);
-            double angleStep = newAngle - oriAngle;
-            if (angleStep <= -HALF_PERIOD) {
-                angleStep += PERIOD;
-            } else if (angleStep > HALF_PERIOD) {
-                angleStep -= PERIOD;
-            }
+            double angleStep = MathUtils.reduce(newAngle - oriAngle, PERIOD, HALF_PERIOD) - HALF_PERIOD;
+
             int step = (int) FastMath.round(angleStep * conversionRatio / PERIOD);
             int newPos = currentPos.getPos() + step;
 

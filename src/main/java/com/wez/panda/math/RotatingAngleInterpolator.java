@@ -12,8 +12,8 @@ import org.apache.commons.math3.util.MathUtils;
 @AllArgsConstructor(staticName = "wrap")
 public class RotatingAngleInterpolator implements UnivariateInterpolator {
 
-    private static final double PERIOD = 360d;
-    private static final double HALF_PERIOD = 180d;
+    public static final double PERIOD = 360d;
+    public static final double HALF_PERIOD = 180d;
 
     private static final double DELTA = 1e-6;
 
