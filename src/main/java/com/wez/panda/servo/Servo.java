@@ -1,11 +1,11 @@
 package com.wez.panda.servo;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.RequiredArgsConstructor;
+import lombok.*;
 import processing.serial.Serial;
 
-@Data
+@Getter
+@ToString
+@EqualsAndHashCode
 @AllArgsConstructor(staticName = "of")
 @RequiredArgsConstructor(staticName = "of")
 public class Servo {

@@ -42,7 +42,6 @@ public class PandaDriver {
             for (Servo servo : servos) {
                 IServoDriver servoDriver = servoDriverFactory.apply(servo);
                 drivers.add(servoDriver);
-
             }
             drivers.stream().parallel().forEach(IServoDriver::initialize);
 
