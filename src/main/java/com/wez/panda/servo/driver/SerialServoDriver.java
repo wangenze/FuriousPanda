@@ -1,11 +1,10 @@
 package com.wez.panda.servo.driver;
 
+import com.wez.panda.serial.SerialController;
 import com.wez.panda.servo.Servo;
 import org.apache.commons.math3.util.FastMath;
 import org.apache.commons.math3.util.MathUtils;
-import processing.serial.Serial;
 
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class SerialServoDriver extends AServoDriver {
@@ -15,8 +14,11 @@ public class SerialServoDriver extends AServoDriver {
     private static final int SERVO_SIGNAL_RANGE = 5000;
     private static final int SERVO_SIGNAL_HALF_RANGE = SERVO_SIGNAL_RANGE / 2;
 
+    private final SerialController controller;
+
     public SerialServoDriver(Servo servo) {
         super(servo);
+        this.controller = new SerialController(servo.getSerial());
     }
 
     private AtomicInteger current = new AtomicInteger(0);
@@ -25,10 +27,9 @@ public class SerialServoDriver extends AServoDriver {
     protected void operate(double posWithOffset) throws InterruptedException {
         int step = calculateStep(posWithOffset);
         if (step != 0) {
-            drive(step);
+            controller.send(step);
         }
     }
-
 
     private int calculateStep(double posWithOffset) {
         double angleInDegrees = MathUtils.reduce(posWithOffset, PERIOD, 0d);
@@ -38,34 +39,5 @@ public class SerialServoDriver extends AServoDriver {
 
         return -SERVO_SIGNAL_HALF_RANGE < step && step <= SERVO_SIGNAL_HALF_RANGE ?
                 step : SERVO_SIGNAL_HALF_RANGE - step;
-    }
-
-    private void drive(int step) {
-        Serial ser = getServo().getSerial();
-
-        ser.write(0x50);
-        ser.write((step >> 24) & 0xFF);
-        ser.write((step >> 16) & 0xFF);
-        ser.write(checksum(0x50, (step >> 28) & 0xFF, (step >> 24) & 0xFF));
-        delay(10L);
-
-        ser.write(0x05);
-        ser.write((step >> 8) & 0xFF);
-        ser.write(step & 0xFF);
-        ser.write(checksum(0x50, (step >> 8) & 0xFF, step & 0xFF));
-        delay(10);
-    }
-
-    private int checksum(int a, int b, int c) {
-        return (a + b + c) & 0xFF;
-    }
-
-    private void delay(long millis) {
-        try {
-            TimeUnit.MILLISECONDS.sleep(millis);
-        } catch (InterruptedException e) {
-            e.printStackTrace(); //NOSONAR
-            Thread.currentThread().interrupt();
-        }
     }
 }
