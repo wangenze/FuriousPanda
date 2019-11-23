@@ -16,8 +16,13 @@ public class Main extends PApplet {
 
     @Override
     public void settings() {
-        Servo servo1 = Servo.of("LB_KN", "C:\\Users\\wange\\IdeaProjects\\FuriousPanda\\src\\test\\resources\\LB_KN.csv", 0d,  new Serial(this, "COM1"));
-//        Servo servo2 = Servo.of("LB_SD", "C:\\Users\\wange\\IdeaProjects\\FuriousPanda\\src\\test\\resources\\LB_SD.csv", 0d,  new Serial(this, "COM2"));
+        Servo servo1 = Servo.builder()
+                .name("LB_KN")
+                .dataFilePath("C:\\Users\\wange\\IdeaProjects\\FuriousPanda\\src\\test\\resources\\LB_KN.csv")
+                .offsetDegrees(0d)
+                .transmissionRatio(1)
+                .serial(new Serial(this, "COM1"))
+                .build();
 
         List<Servo> servos = Arrays.asList(servo1);
         DriverParameters parameters = DriverParameters.builder()

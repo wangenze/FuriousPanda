@@ -10,14 +10,14 @@ import java.util.List;
 public class Resources {
     public static List<Servo> getAllServosForTesting() {
         return Arrays.asList(
-                Servo.of("LB_KN", "LB_KN.csv", 90d, null),
-                Servo.of("LB_SD", "LB_SD.csv"),
-                Servo.of("LF_KN", "LF_KN.csv"),
-                Servo.of("LF_SD", "LF_SD.csv"),
-                Servo.of("RB_KN", "RB_KN.csv", -90d, null),
-                Servo.of("RB_SD", "RB_SD.csv"),
-                Servo.of("RF_KN", "RF_KN.csv"),
-                Servo.of("RF_SD", "RF_SD.csv")
+                Servo.builder().name("LB_KN").dataFilePath("LB_KN.csv").offsetDegrees(90d).build(),
+                Servo.builder().name("LB_SD").dataFilePath("LB_SD.csv").build(),
+                Servo.builder().name("LF_KN").dataFilePath("LF_KN.csv").build(),
+                Servo.builder().name("LF_SD").dataFilePath("LF_SD.csv").build(),
+                Servo.builder().name("RB_KN").dataFilePath("RB_KN.csv").offsetDegrees(-90d).build(),
+                Servo.builder().name("RB_SD").dataFilePath("RB_SD.csv").build(),
+                Servo.builder().name("RF_KN").dataFilePath("RF_KN.csv").build(),
+                Servo.builder().name("RF_SD").dataFilePath("RF_SD.csv").build()
         );
     }
 }

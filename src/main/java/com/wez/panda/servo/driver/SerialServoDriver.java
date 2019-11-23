@@ -2,30 +2,33 @@ package com.wez.panda.servo.driver;
 
 import com.wez.panda.serial.SerialController;
 import com.wez.panda.servo.Servo;
+import lombok.Value;
 import org.apache.commons.math3.util.FastMath;
 import org.apache.commons.math3.util.MathUtils;
 
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicReference;
 
 public class SerialServoDriver extends AServoDriver {
 
     // Angle should be between 0 and 360
     private static final int PERIOD = 360;
+    private static final int HALF_PERIOD = 180;
 
-    private static final int SERVO_SIGNAL_RANGE = 5000;
-    private static final int SERVO_SIGNAL_HALF_RANGE = SERVO_SIGNAL_RANGE / 2;
+    private static final double SERVO_SIGNAL_RANGE = 5000;
 
     private final SerialController controller;
     private final DriverParameters parameters;
+    private final double conversionRatio;
 
     public SerialServoDriver(Servo servo, DriverParameters parameters) {
         super(servo);
         this.controller = new SerialController(servo.getSerial());
         this.parameters = parameters;
+        this.conversionRatio = servo.getTransmissionRatio() * SERVO_SIGNAL_RANGE;
     }
 
-    private AtomicInteger current = new AtomicInteger(0);
+    private AtomicReference<Position> current = new AtomicReference<>(new Position(0, 0));
 
     @Override
     public void initialize() {
@@ -42,14 +45,21 @@ public class SerialServoDriver extends AServoDriver {
         delay(parameters.getMinInterval());
     }
 
-    private int calculateStep(double posWithOffset) {
-        double angleInDegrees = MathUtils.reduce(posWithOffset, PERIOD, 0d);
-        int newActual = (int) FastMath.round(angleInDegrees * SERVO_SIGNAL_RANGE / PERIOD);
-        int oriActual = current.getAndSet(newActual);
-        int step = newActual - oriActual;
-
-        return -SERVO_SIGNAL_HALF_RANGE < step && step <= SERVO_SIGNAL_HALF_RANGE ?
-                step : SERVO_SIGNAL_HALF_RANGE - step;
+    private int calculateStep(final double targetAngle) {
+        Position position = current.updateAndGet(currentPos -> {
+            double oriAngle = currentPos.getPos() * PERIOD / conversionRatio;
+            double newAngle = MathUtils.reduce(targetAngle, PERIOD, 0d);
+            double angleStep = newAngle - oriAngle;
+            if (angleStep <= -HALF_PERIOD) {
+                angleStep += PERIOD;
+            } else if (angleStep > HALF_PERIOD) {
+                angleStep -= PERIOD;
+            }
+            int step = (int) FastMath.round(angleStep * conversionRatio / PERIOD);
+            int newPos = currentPos.getPos() + step;
+            return new Position(newPos, step);
+        });
+        return position.step;
     }
 
     private void delay(long millis) {
@@ -59,5 +69,11 @@ public class SerialServoDriver extends AServoDriver {
             e.printStackTrace(); //NOSONAR
             Thread.currentThread().interrupt();
         }
+    }
+
+    @Value
+    private static class Position {
+        private int pos;
+        private int step;
     }
 }

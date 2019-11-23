@@ -35,7 +35,7 @@ public class PandaDriverTest {
     @Test
     public void testSingleServo() throws Exception {
         PandaDriver pandaDriver = PandaDriver.builder()
-                .servos(Collections.singletonList(Servo.of("LB_KN", "LB_KN.csv")))
+                .servos(Collections.singletonList(Servo.builder().name("LB_KN").dataFilePath("LB_KN.csv").build()))
                 .servoDriverFactory(IServoDriver.EmptyDriver::new)
                 .build();
         // Start

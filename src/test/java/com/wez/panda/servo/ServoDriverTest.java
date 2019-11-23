@@ -11,7 +11,7 @@ public class ServoDriverTest {
 
     @Test
     public void testServoDriver() throws Exception {
-        IServoDriver driver = new AServoDriver(Servo.of("LB_KN", "LB_KN.csv")) {
+        IServoDriver driver = new AServoDriver(Servo.builder().name("LB_KN").dataFilePath("LB_KN.csv").build()) {
             @Override
             protected void operate(double posAfterApplyingOffset) throws InterruptedException {
                 System.out.println(String.format("Servo %s operating to position %.3f", getServo().getName(), posAfterApplyingOffset));

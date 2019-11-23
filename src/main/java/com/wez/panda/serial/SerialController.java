@@ -13,21 +13,27 @@ public class SerialController {
     private final Serial serial;
 
     public synchronized void send(int message) {
-        serial.write(0x50);
-        serial.write((message >> 24) & 0xFF);
-        serial.write((message >> 16) & 0xFF);
-        serial.write(checksum(0x50, (message >> 24) & 0xFF, (message >> 16) & 0xFF));
+//        System.out.println("Writing message: " + message);
+        sequentialWrite(0x50, (message >> 24) & 0xFF, (message >> 16) & 0xFF);
         delay(10L);
 
-        serial.write(0x05);
-        serial.write((message >> 8) & 0xFF);
-        serial.write(message & 0xFF);
-        serial.write(checksum(0x50, (message >> 8) & 0xFF, message & 0xFF));
+        sequentialWrite(0x05, (message >> 8) & 0xFF, message & 0xFF);
         delay(10L);
     }
 
-    private int checksum(int a, int b, int c) {
-        return (a + b + c) & 0xFF;
+    void sequentialWrite(int a, int b, int c) {
+        serial.write(a);
+        serial.write(b);
+        serial.write(c);
+        serial.write(checksum(a, b, c));
+    }
+
+    int checksum(int a, int b, int c) {
+        long sum = 0L;
+        sum += a;
+        sum += b;
+        sum += c;
+        return (int) (sum & 0xFF);
     }
 
     private void delay(long millis) {
