@@ -3,6 +3,7 @@ package com.wez.panda;
 import com.wez.panda.servo.Servo;
 import com.wez.panda.servo.driver.IServoDriver;
 import com.wez.panda.servo.driver.SerialServoDriver;
+import com.wez.panda.servo.driver.SerialServoDriver.DriverParameters;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NonNull;
@@ -81,8 +82,14 @@ public class PandaDriver {
     }
 
     public static class Builder {
-        private Function<Servo, IServoDriver> servoDriverFactory = SerialServoDriver::new;
+        private DriverParameters driverParameters = SerialServoDriver.DEFAULT_PARAMETERS;
+        private Function<Servo, IServoDriver> servoDriverFactory = servo -> new SerialServoDriver(servo, driverParameters);
         private List<Servo> servos;
+
+        public Builder driverParameters(DriverParameters driverParameters) {
+            this.driverParameters = driverParameters;
+            return this;
+        }
 
         public Builder servoDriverFactory(Function<Servo, IServoDriver> servoDriverFactory) {
             this.servoDriverFactory = servoDriverFactory;

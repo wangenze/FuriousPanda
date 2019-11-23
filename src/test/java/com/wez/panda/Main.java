@@ -1,6 +1,7 @@
 package com.wez.panda;
 
 import com.wez.panda.servo.Servo;
+import com.wez.panda.servo.driver.SerialServoDriver;
 import processing.core.PApplet;
 import processing.serial.Serial;
 
@@ -13,15 +14,17 @@ public class Main extends PApplet {
         PApplet.main(new String[]{Main.class.getName()});
     }
 
-    private PandaDriver pandaDriver;
-
     @Override
     public void settings() {
         Servo servo1 = Servo.of("LB_KN", "C:\\Users\\wange\\IdeaProjects\\FuriousPanda\\src\\test\\resources\\LB_KN.csv", 0d,  new Serial(this, "COM1"));
 //        Servo servo2 = Servo.of("LB_SD", "C:\\Users\\wange\\IdeaProjects\\FuriousPanda\\src\\test\\resources\\LB_SD.csv", 0d,  new Serial(this, "COM2"));
 
         List<Servo> servos = Arrays.asList(servo1);
-        pandaDriver = PandaDriver.builder().servos(servos).build();
+        SerialServoDriver.DriverParameters parameters = SerialServoDriver.DriverParameters.builder()
+                .delayAfterInitialization(5_000L)
+                .minInterval(100L)
+                .build();
+        PandaDriver pandaDriver = PandaDriver.builder().servos(servos).driverParameters(parameters).build();
         pandaDriver.start();
     }
 
@@ -31,9 +34,6 @@ public class Main extends PApplet {
 
     @Override
     public void draw() {
-        pandaDriver.getServos().forEach(servo -> {
-            System.out.println(servo.getName());
-        });
         delay(5000);
     }
 }
