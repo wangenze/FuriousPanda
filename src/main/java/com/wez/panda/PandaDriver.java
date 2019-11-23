@@ -33,9 +33,13 @@ public class PandaDriver {
         return new Builder();
     }
 
+    public boolean isAlive() {
+        return executorService != null;
+    }
+
     public synchronized void start() {
         synchronized (this) {
-            if (executorService != null) {
+            if (isAlive()) {
                 return;
             }
             drivers.clear();
@@ -52,7 +56,7 @@ public class PandaDriver {
 
     public synchronized void stop() {
         synchronized (this) {
-            if (executorService == null) {
+            if (!isAlive()) {
                 return;
             }
             for (IServoDriver driver : drivers) {
