@@ -24,6 +24,6 @@ public class SerialControllerTest {
     }
 
     private String toBinaryString(int i) {
-        return StringUtils.leftPad(Integer.toBinaryString(i), 16, '0');
+        return "0x" + StringUtils.leftPad(StringUtils.upperCase(Integer.toHexString(i)), 8, '0');
     }
 }
