@@ -1,9 +1,9 @@
 package com.wez.panda;
 
 import com.wez.panda.servo.Servo;
+import com.wez.panda.servo.driver.DriverParameters;
 import com.wez.panda.servo.driver.IServoDriver;
 import com.wez.panda.servo.driver.SerialServoDriver;
-import com.wez.panda.servo.driver.SerialServoDriver.DriverParameters;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NonNull;
@@ -17,6 +17,8 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
+
+import static com.wez.panda.servo.driver.DriverParameters.DEFAULT_PARAMETERS;
 
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 public class PandaDriver {
@@ -82,7 +84,7 @@ public class PandaDriver {
     }
 
     public static class Builder {
-        private DriverParameters driverParameters = SerialServoDriver.DEFAULT_PARAMETERS;
+        private DriverParameters driverParameters = DEFAULT_PARAMETERS;
         private Function<Servo, IServoDriver> servoDriverFactory = servo -> new SerialServoDriver(servo, driverParameters);
         private List<Servo> servos;
 

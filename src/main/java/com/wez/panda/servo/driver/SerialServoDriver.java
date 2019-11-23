@@ -2,8 +2,6 @@ package com.wez.panda.servo.driver;
 
 import com.wez.panda.serial.SerialController;
 import com.wez.panda.servo.Servo;
-import lombok.Builder;
-import lombok.Value;
 import org.apache.commons.math3.util.FastMath;
 import org.apache.commons.math3.util.MathUtils;
 
@@ -11,11 +9,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class SerialServoDriver extends AServoDriver {
-
-    public static final DriverParameters DEFAULT_PARAMETERS = DriverParameters.builder()
-            .delayAfterInitialization(3_000L)
-            .minInterval(100L)
-            .build();
 
     // Angle should be between 0 and 360
     private static final int PERIOD = 360;
@@ -66,12 +59,5 @@ public class SerialServoDriver extends AServoDriver {
             e.printStackTrace(); //NOSONAR
             Thread.currentThread().interrupt();
         }
-    }
-
-    @Value
-    @Builder
-    public static class DriverParameters {
-        private final long delayAfterInitialization;
-        private final long minInterval;
     }
 }
