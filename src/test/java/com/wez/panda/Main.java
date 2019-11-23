@@ -1,11 +1,11 @@
 package com.wez.panda;
 
-import com.wez.panda.serial.SerialServoDriver;
 import com.wez.panda.servo.Servo;
 import processing.core.PApplet;
 import processing.serial.Serial;
 
-import java.util.Collections;
+import java.util.Arrays;
+import java.util.List;
 
 public class Main extends PApplet {
 
@@ -17,13 +17,10 @@ public class Main extends PApplet {
 
     @Override
     public void settings() {
-        size(1000, 800);
-        pandaDriver = PandaDriver.builder()
-                //.servos(Resources.getAllServos(this))
-                .servos(Collections.singletonList(
-                        Servo.of("LB_KN", "LB_KN.csv", new Serial(this), 0d)))
-                .servoDriverFactory(SerialServoDriver::new)
-                .build();
+        Servo servo1 = Servo.of("LB_KN", "C:\\Users\\wange\\IdeaProjects\\FuriousPanda\\src\\test\\resources\\LB_KN.csv", 10d,  new Serial(this, "COM1"));
+
+        List<Servo> servos = Arrays.asList(servo1);
+        pandaDriver = PandaDriver.builder().servos(servos).build();
         pandaDriver.start();
     }
 

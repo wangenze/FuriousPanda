@@ -1,7 +1,7 @@
 package com.wez.panda;
 
-import com.wez.panda.servo.AServoDriver;
 import com.wez.panda.servo.Servo;
+import com.wez.panda.servo.driver.AServoDriver;
 import one.util.streamex.StreamEx;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.math3.util.FastMath;
@@ -76,8 +76,8 @@ public class Simulation extends PApplet {
         }
 
         @Override
-        protected void operate(double pos) throws InterruptedException {
-            STATUS.put(getServo(), FastMath.toRadians(pos));
+        protected void operate(double posAfterApplyingOffset) throws InterruptedException {
+            STATUS.put(getServo(), FastMath.toRadians(posAfterApplyingOffset));
         }
     }
 }

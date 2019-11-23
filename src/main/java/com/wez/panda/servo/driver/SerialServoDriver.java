@@ -1,6 +1,5 @@
-package com.wez.panda.serial;
+package com.wez.panda.servo.driver;
 
-import com.wez.panda.servo.AServoDriver;
 import com.wez.panda.servo.Servo;
 import org.apache.commons.math3.util.FastMath;
 import org.apache.commons.math3.util.MathUtils;
@@ -23,14 +22,16 @@ public class SerialServoDriver extends AServoDriver {
     private AtomicInteger current = new AtomicInteger(0);
 
     @Override
-    protected void operate(double pos) throws InterruptedException {
-        int step = calculateStep(pos);
-        drive(step);
+    protected void operate(double posWithOffset) throws InterruptedException {
+        int step = calculateStep(posWithOffset);
+        if (step != 0) {
+            drive(step);
+        }
     }
 
 
-    private int calculateStep(double pos) {
-        double angleInDegrees = MathUtils.reduce(pos, PERIOD, getServo().getOffsetDegrees());
+    private int calculateStep(double posWithOffset) {
+        double angleInDegrees = MathUtils.reduce(posWithOffset, PERIOD, 0d);
         int newActual = (int) FastMath.round(angleInDegrees * SERVO_SIGNAL_RANGE / PERIOD);
         int oriActual = current.getAndSet(newActual);
         int step = newActual - oriActual;

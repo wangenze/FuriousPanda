@@ -1,4 +1,6 @@
-package com.wez.panda.servo;
+package com.wez.panda.servo.driver;
+
+import com.wez.panda.servo.Servo;
 
 public interface IServoDriver extends Runnable {
 

@@ -1,7 +1,8 @@
 package com.wez.panda;
 
-import com.wez.panda.servo.IServoDriver;
 import com.wez.panda.servo.Servo;
+import com.wez.panda.servo.driver.IServoDriver;
+import com.wez.panda.servo.driver.SerialServoDriver;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NonNull;
@@ -77,7 +78,7 @@ public class PandaDriver {
     }
 
     public static class Builder {
-        private Function<Servo, IServoDriver> servoDriverFactory = IServoDriver.EmptyDriver::new;
+        private Function<Servo, IServoDriver> servoDriverFactory = SerialServoDriver::new;
         private List<Servo> servos;
 
         public Builder servoDriverFactory(Function<Servo, IServoDriver> servoDriverFactory) {

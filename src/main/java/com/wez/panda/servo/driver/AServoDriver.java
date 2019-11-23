@@ -1,7 +1,8 @@
-package com.wez.panda.servo;
+package com.wez.panda.servo.driver;
 
 import com.wez.panda.data.DataFileLoader;
 import com.wez.panda.data.ServoDataConverter;
+import com.wez.panda.servo.Servo;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -60,10 +61,10 @@ public abstract class AServoDriver implements IServoDriver {
         terminated.set(true);
     }
 
-    protected abstract void operate(double pos) throws InterruptedException;
+    protected abstract void operate(double posAfterApplyingOffset) throws InterruptedException;
 
     private synchronized void syncOperate(double pos) throws InterruptedException {
-        this.operate(pos);
+        this.operate(pos + servo.getOffsetDegrees());
     }
 
     private UnivariateFunction loadData() {

@@ -1,7 +1,8 @@
 package com.wez.panda;
 
-import com.wez.panda.servo.AServoDriver;
 import com.wez.panda.servo.Servo;
+import com.wez.panda.servo.driver.AServoDriver;
+import com.wez.panda.servo.driver.IServoDriver;
 import org.junit.Test;
 
 import java.util.Collections;
@@ -35,6 +36,7 @@ public class PandaDriverTest {
     public void testSingleServo() throws Exception {
         PandaDriver pandaDriver = PandaDriver.builder()
                 .servos(Collections.singletonList(Servo.of("LB_KN", "LB_KN.csv")))
+                .servoDriverFactory(IServoDriver.EmptyDriver::new)
                 .build();
         // Start
         pandaDriver.start();
@@ -48,8 +50,8 @@ public class PandaDriverTest {
         }
 
         @Override
-        protected void operate(double pos) throws InterruptedException {
-            System.out.println(String.format("Servo %s operating to position %.3f", getServo().getName(), pos));
+        protected void operate(double posAfterApplyingOffset) throws InterruptedException {
+            System.out.println(String.format("Servo %s operating to position %.3f", getServo().getName(), posAfterApplyingOffset));
             TimeUnit.MILLISECONDS.sleep(100);
         }
     }

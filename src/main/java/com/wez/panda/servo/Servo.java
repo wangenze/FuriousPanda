@@ -12,6 +12,6 @@ public class Servo {
     private final String name;
     private final String dataFilePath;
 
-    private Serial serial = null;
     private double offsetDegrees = 0d;
+    private Serial serial = null;
 }

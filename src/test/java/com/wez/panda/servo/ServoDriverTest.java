@@ -1,5 +1,7 @@
 package com.wez.panda.servo;
 
+import com.wez.panda.servo.driver.AServoDriver;
+import com.wez.panda.servo.driver.IServoDriver;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -11,8 +13,8 @@ public class ServoDriverTest {
     public void testServoDriver() throws Exception {
         IServoDriver driver = new AServoDriver(Servo.of("LB_KN", "LB_KN.csv")) {
             @Override
-            protected void operate(double pos) throws InterruptedException {
-                System.out.println(String.format("Servo %s operating to position %.3f", getServo().getName(), pos));
+            protected void operate(double posAfterApplyingOffset) throws InterruptedException {
+                System.out.println(String.format("Servo %s operating to position %.3f", getServo().getName(), posAfterApplyingOffset));
                 TimeUnit.MILLISECONDS.sleep(100);
             }
         };
