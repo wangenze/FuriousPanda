@@ -32,17 +32,17 @@ public class RotatingAngleInterpolator implements UnivariateInterpolator {
         Validate.isTrue(Math.abs(y[0] - y[n]) < DELTA);
 
         // Slopes
-        double m[] = new double[n];
+        double[] m = new double[n];
         // Corrected y values
-        double yCorrected[] = new double[n + 1];
+        double[] yCorrected = new double[n + 1];
         yCorrected[0] = y[0];
         for (int i = 0; i < n; i++) {
             double d = MathUtils.reduce(y[i + 1] - y[i], PERIOD, HALF_PERIOD) - HALF_PERIOD;
             m[i] = d / (x[i + 1] - x[i]);
             yCorrected[i + 1] = y[i] + d;
         }
-        final PolynomialFunction polynomials[] = new PolynomialFunction[n];
-        final double coefficients[] = new double[2];
+        final PolynomialFunction[] polynomials = new PolynomialFunction[n];
+        final double[] coefficients = new double[2];
         for (int i = 0; i < n; i++) {
             coefficients[0] = yCorrected[i];
             coefficients[1] = m[i];

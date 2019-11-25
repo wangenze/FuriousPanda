@@ -19,8 +19,6 @@ import java.util.List;
 @NoArgsConstructor
 public class DataFileLoader {
 
-    private final ClassLoader classLoader = getClass().getClassLoader();
-
     public List<Pair<Double, Double>> loadRawData(String dataFilePath) {
         File dataFile = getFile(dataFilePath);
         final List<Pair<Double, Double>> data = new ArrayList<>();
