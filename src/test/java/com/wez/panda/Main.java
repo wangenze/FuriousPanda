@@ -1,5 +1,6 @@
 package com.wez.panda;
 
+import com.wez.panda.servo.ControlMode;
 import com.wez.panda.servo.Servo;
 import com.wez.panda.servo.driver.DriverParameters;
 import processing.core.PApplet;
@@ -22,6 +23,7 @@ public class Main extends PApplet {
                 .offsetDegrees(0d)
                 .transmissionRatio(1)
                 .serial(new Serial(this, "COM1"))
+                .controlMode(ControlMode.ABSOLUTE)
                 .build();
 
         List<Servo> servos = Arrays.asList(servo1);

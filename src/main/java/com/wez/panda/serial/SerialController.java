@@ -12,12 +12,12 @@ public class SerialController {
     @NonNull
     private final Serial serial;
 
-    public synchronized void send(int message) {
-//        System.out.println("Writing message: " + message);
-        sequentialWrite(0x50, (message >> 24) & 0xFF, (message >> 16) & 0xFF);
+    public synchronized void send(int signal) {
+//        System.out.println("Writing signal: " + signal);
+        sequentialWrite(0x50, (signal >> 24) & 0xFF, (signal >> 16) & 0xFF);
         delay(10L);
 
-        sequentialWrite(0x05, (message >> 8) & 0xFF, message & 0xFF);
+        sequentialWrite(0x05, (signal >> 8) & 0xFF, signal & 0xFF);
         delay(10L);
     }
 

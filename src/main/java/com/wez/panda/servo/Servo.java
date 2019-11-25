@@ -10,12 +10,14 @@ import processing.serial.Serial;
 @Getter
 @AllArgsConstructor
 public class Servo {
+
     private final String name;
     private final String dataFilePath;
 
     private double offsetDegrees;
     private double transmissionRatio;
     private Serial serial;
+    private ControlMode controlMode;
 
     public static Builder builder() {
         return new Builder();
@@ -28,6 +30,7 @@ public class Servo {
         private double offsetDegrees = 0d;
         private double transmissionRatio = 1d;
         private Serial serial = null;
+        private ControlMode controlMode = ControlMode.RELATIVE;
 
         public Builder name(String name) {
             this.name = name;
@@ -54,10 +57,15 @@ public class Servo {
             return this;
         }
 
+        public Builder controlMode(ControlMode controlMode) {
+            this.controlMode = controlMode;
+            return this;
+        }
+
         public Servo build() {
             Validate.notEmpty(name);
             Validate.notEmpty(dataFilePath);
-            return new Servo(name, dataFilePath, offsetDegrees, transmissionRatio, serial);
+            return new Servo(name, dataFilePath, offsetDegrees, transmissionRatio, serial, controlMode);
         }
     }
 }
