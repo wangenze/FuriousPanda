@@ -3,6 +3,8 @@ package com.wez.panda.servo.driver;
 import com.wez.panda.serial.SerialController;
 import com.wez.panda.servo.Position;
 import com.wez.panda.servo.Servo;
+import org.apache.commons.lang3.Validate;
+import org.apache.commons.lang3.time.StopWatch;
 import org.apache.commons.math3.util.FastMath;
 import org.apache.commons.math3.util.MathUtils;
 
@@ -22,12 +24,16 @@ public class SerialServoDriver extends AServoDriver {
     private final double conversionRatio;
     private final Function<Position, Integer> position2Signal;
 
-    public SerialServoDriver(Servo servo, DriverParameters parameters) {
-        super(servo);
+    public SerialServoDriver(Servo servo, StopWatch stopWatch, DriverParameters parameters) {
+        super(servo, stopWatch);
         this.controller = new SerialController(servo.getSerial());
         this.parameters = parameters;
         this.conversionRatio = servo.getTransmissionRatio() * SERVO_SIGNAL_RANGE;
         this.position2Signal = servo.getControlMode().getPosition2SignalConverter();
+    }
+
+    public static Builder builder() {
+        return new Builder();
     }
 
     private AtomicReference<Position> current = new AtomicReference<>(new Position(0, 0));
@@ -41,8 +47,10 @@ public class SerialServoDriver extends AServoDriver {
     @Override
     protected void operate(double posWithOffset) throws InterruptedException {
         Position position = calculatePosition(posWithOffset);
-        int signal = position2Signal.apply(position);
-        controller.send(signal);
+        if (position.getStep() != 0) {
+            int signal = position2Signal.apply(position);
+            controller.send(signal);
+        }
         delay(parameters.getMinInterval());
     }
 
@@ -70,4 +78,36 @@ public class SerialServoDriver extends AServoDriver {
         }
     }
 
+
+    public static final class Builder {
+
+        private Servo servo;
+        private StopWatch stopWatch;
+        private DriverParameters parameters;
+
+
+        private Builder() {
+        }
+
+        public Builder servo(Servo servo) {
+            this.servo = servo;
+            return this;
+        }
+
+        public Builder stopWatch(StopWatch stopWatch) {
+            this.stopWatch = stopWatch;
+            return this;
+        }
+
+        public Builder parameters(DriverParameters parameters) {
+            this.parameters = parameters;
+            return this;
+        }
+
+        public SerialServoDriver build() {
+            Validate.notNull(servo);
+            Validate.notNull(parameters);
+            return new SerialServoDriver(servo, stopWatch == null ? new StopWatch() : stopWatch, parameters);
+        }
+    }
 }

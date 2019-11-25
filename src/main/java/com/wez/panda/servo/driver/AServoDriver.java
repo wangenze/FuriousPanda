@@ -7,6 +7,7 @@ import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.time.StopWatch;
 import org.apache.commons.math3.analysis.UnivariateFunction;
 import org.apache.commons.math3.util.Pair;
 
@@ -18,10 +19,12 @@ import java.util.concurrent.atomic.AtomicBoolean;
 @RequiredArgsConstructor
 public abstract class AServoDriver implements IServoDriver {
 
-    private static final double MILLIS_PER_SEC = (double) TimeUnit.SECONDS.toMillis(1);
+    private static final double NANOS_PER_SEC = (double) TimeUnit.SECONDS.toNanos(1L);
 
     @Getter
     private final Servo servo;
+
+    private final StopWatch stopWatch;
 
     @Getter(lazy = true, value = AccessLevel.PACKAGE)
     private final UnivariateFunction data = loadData();
@@ -42,13 +45,10 @@ public abstract class AServoDriver implements IServoDriver {
 
     @Override
     public void run() {
-
-        final double offset = now();
-
         // Starting from initial position
         while (!terminated.get() && !Thread.currentThread().isInterrupted()) {
             try {
-                syncOperate(getData().value(now() - offset));
+                syncOperate(getData().value(now()));
             } catch (InterruptedException ie) {
                 Thread.currentThread().interrupt();
             }
@@ -73,6 +73,6 @@ public abstract class AServoDriver implements IServoDriver {
     }
 
     private double now() {
-        return System.currentTimeMillis() / MILLIS_PER_SEC;
+        return stopWatch.getNanoTime() / NANOS_PER_SEC;
     }
 }

@@ -3,6 +3,7 @@ package com.wez.panda;
 import com.wez.panda.servo.Servo;
 import com.wez.panda.servo.driver.AServoDriver;
 import com.wez.panda.servo.driver.IServoDriver;
+import org.apache.commons.lang3.time.StopWatch;
 import org.junit.Test;
 
 import java.util.Collections;
@@ -45,8 +46,8 @@ public class PandaDriverTest {
     }
 
     static class MockingServoDriver extends AServoDriver {
-        public MockingServoDriver(Servo servo) {
-            super(servo);
+        public MockingServoDriver(Servo servo, StopWatch stopWatch) {
+            super(servo, stopWatch);
         }
 
         @Override

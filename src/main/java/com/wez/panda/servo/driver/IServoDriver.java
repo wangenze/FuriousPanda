@@ -1,6 +1,7 @@
 package com.wez.panda.servo.driver;
 
 import com.wez.panda.servo.Servo;
+import org.apache.commons.lang3.time.StopWatch;
 
 public interface IServoDriver extends Runnable {
 
@@ -12,7 +13,7 @@ public interface IServoDriver extends Runnable {
 
     class EmptyDriver implements IServoDriver {
 
-        public EmptyDriver(Servo servo) {
+        public EmptyDriver(Servo servo, StopWatch stopWatch) {
         }
 
         @Override

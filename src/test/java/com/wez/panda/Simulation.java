@@ -4,6 +4,7 @@ import com.wez.panda.servo.Servo;
 import com.wez.panda.servo.driver.AServoDriver;
 import one.util.streamex.StreamEx;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.time.StopWatch;
 import org.apache.commons.math3.util.FastMath;
 import processing.core.PApplet;
 import processing.core.PVector;
@@ -19,6 +20,8 @@ public class Simulation extends PApplet {
 
     final List<Line> lines = new ArrayList<>();
 
+    private PandaDriver pandaDriver;
+
     public static void main(String[] args) {
         PApplet.main(new String[]{Simulation.class.getName()});
     }
@@ -26,7 +29,7 @@ public class Simulation extends PApplet {
     @Override
     public void settings() {
         size(1000, 800);
-        PandaDriver pandaDriver = PandaDriver.builder()
+        pandaDriver = PandaDriver.builder()
                 .servos(Resources.getAllServosForTesting())
                 .servoDriverFactory(MockingServoDriver::new)
                 .build();
@@ -44,6 +47,15 @@ public class Simulation extends PApplet {
         background(0);
         noStroke();
         lines.forEach(Line::display);
+    }
+
+    @Override
+    public void mousePressed() {
+        if (pandaDriver.isPaused()) {
+            pandaDriver.resume();
+        } else {
+            pandaDriver.pause();
+        }
     }
 
     class Line {
@@ -71,8 +83,8 @@ public class Simulation extends PApplet {
     }
 
     class MockingServoDriver extends AServoDriver {
-        public MockingServoDriver(Servo servo) {
-            super(servo);
+        public MockingServoDriver(Servo servo, StopWatch stopWatch) {
+            super(servo, stopWatch);
         }
 
         @Override

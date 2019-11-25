@@ -3,26 +3,41 @@ package com.wez.panda;
 import com.wez.panda.servo.ControlMode;
 import com.wez.panda.servo.Servo;
 import com.wez.panda.servo.driver.DriverParameters;
+import org.mockito.Mockito;
 import processing.core.PApplet;
 import processing.serial.Serial;
 
 import java.util.Arrays;
 import java.util.List;
 
-public class Main extends PApplet {
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.Mockito.doAnswer;
+
+public class SerialSimulation extends PApplet {
+
+    private PandaDriver pandaDriver;
 
     public static void main(String[] args) {
-        PApplet.main(new String[]{Main.class.getName()});
+        PApplet.main(new String[]{SerialSimulation.class.getName()});
     }
 
     @Override
     public void settings() {
+        size(200, 200);
+
+        Serial mockSerial = Mockito.mock(Serial.class);
+        doAnswer(invocation -> {
+            int val = invocation.getArgument(0);
+            System.out.println("Write to serial:\t" + val);
+            return null;
+        }).when(mockSerial).write(anyInt());
+
         Servo servo1 = Servo.builder()
                 .name("RF_SD")
                 .dataFilePath("C:\\Users\\wange\\IdeaProjects\\FuriousPanda\\src\\test\\resources\\RF_SD.csv")
                 .offsetDegrees(0d)
                 .transmissionRatio(1)
-                .serial(new Serial(this, "COM1"))
+                .serial(mockSerial)
                 .controlMode(ControlMode.ABSOLUTE)
                 .build();
 
@@ -31,7 +46,7 @@ public class Main extends PApplet {
                 .delayAfterInitialization(5_000L)
                 .minInterval(100L)
                 .build();
-        PandaDriver pandaDriver = PandaDriver.builder().servos(servos).driverParameters(parameters).build();
+        pandaDriver = PandaDriver.builder().servos(servos).driverParameters(parameters).build();
         pandaDriver.start();
     }
 
@@ -41,6 +56,15 @@ public class Main extends PApplet {
 
     @Override
     public void draw() {
-        delay(5000);
+        background(0);
+    }
+
+    @Override
+    public void mousePressed() {
+        if (pandaDriver.isPaused()) {
+            pandaDriver.resume();
+        } else {
+            pandaDriver.pause();
+        }
     }
 }
