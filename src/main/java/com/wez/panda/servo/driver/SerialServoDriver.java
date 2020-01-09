@@ -26,7 +26,7 @@ public class SerialServoDriver extends AServoDriver {
 
     public SerialServoDriver(Servo servo, StopWatch stopWatch, DriverParameters parameters) {
         super(servo, stopWatch);
-        this.controller = servo.getSerialMode().getController(servo.getSerial());
+        this.controller = servo.getSerialMode().apply(servo.getSerial());
         this.parameters = parameters;
         this.conversionRatio = servo.getTransmissionRatio() * SERVO_SIGNAL_RANGE;
         this.position2Signal = servo.getControlMode().getPosition2SignalConverter();

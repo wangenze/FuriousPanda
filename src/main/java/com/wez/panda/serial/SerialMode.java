@@ -6,14 +6,15 @@ import processing.serial.Serial;
 import java.util.function.Function;
 
 @AllArgsConstructor
-public enum SerialMode {
+public enum SerialMode implements Function<Serial, ASerialController> {
 
     DISPLACEMENT(DisplacementController::new),
     VELOCITY(VelocityController::new);
 
-    private final Function<Serial, ASerialController> serialControllerBuilder;
+    private final Function<Serial, ASerialController> innerFunction;
 
-    public ASerialController getController(Serial serial) {
-        return serialControllerBuilder.apply(serial);
+    @Override
+    public ASerialController apply(Serial serial) {
+        return innerFunction.apply(serial);
     }
 }
