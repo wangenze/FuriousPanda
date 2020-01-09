@@ -9,7 +9,7 @@ import java.util.List;
 
 public class ServoDataConverter {
 
-    private RotatingAngleInterpolator interpolator = RotatingAngleInterpolator.linearInterpolator();
+    private RotatingAngleInterpolator interpolator = new RotatingAngleInterpolator();
 
     public UnivariateFunction convert(List<Pair<Double, Double>> rawData) {
         double[] xVal = StreamEx.of(rawData).mapToDouble(Pair::getFirst).toArray();

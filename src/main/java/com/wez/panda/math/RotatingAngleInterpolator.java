@@ -1,27 +1,18 @@
 package com.wez.panda.math;
 
-import lombok.AllArgsConstructor;
 import org.apache.commons.lang3.Validate;
 import org.apache.commons.math3.analysis.UnivariateFunction;
-import org.apache.commons.math3.analysis.interpolation.LinearInterpolator;
 import org.apache.commons.math3.analysis.interpolation.UnivariateInterpolator;
 import org.apache.commons.math3.analysis.polynomials.PolynomialFunction;
 import org.apache.commons.math3.analysis.polynomials.PolynomialSplineFunction;
 import org.apache.commons.math3.util.MathUtils;
 
-@AllArgsConstructor(staticName = "wrap")
 public class RotatingAngleInterpolator implements UnivariateInterpolator {
 
     public static final double PERIOD = 360d;
     public static final double HALF_PERIOD = 180d;
 
     private static final double DELTA = 1e-6;
-
-    private final UnivariateInterpolator interpolator;
-
-    public static RotatingAngleInterpolator linearInterpolator() {
-        return RotatingAngleInterpolator.wrap(new LinearInterpolator());
-    }
 
     @Override
     public UnivariateFunction interpolate(double[] x, double[] y) {
