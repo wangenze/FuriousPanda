@@ -8,16 +8,16 @@ import processing.serial.Serial;
 
 import static org.mockito.Mockito.*;
 
-public class SerialControllerTest {
+public class DisplacementControllerTest {
 
     private Serial serial;
 
-    private SerialController controller;
+    private DisplacementController controller;
 
     @Before
     public void setUp() throws Exception {
         serial = mock(Serial.class);
-        controller = new SerialController(serial);
+        controller = new DisplacementController(serial);
     }
 
     @Test

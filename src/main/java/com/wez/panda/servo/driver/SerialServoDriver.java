@@ -1,6 +1,6 @@
 package com.wez.panda.servo.driver;
 
-import com.wez.panda.serial.SerialController;
+import com.wez.panda.serial.ASerialController;
 import com.wez.panda.servo.Position;
 import com.wez.panda.servo.Servo;
 import org.apache.commons.lang3.Validate;
@@ -19,14 +19,14 @@ public class SerialServoDriver extends AServoDriver {
 
     private static final double SERVO_SIGNAL_RANGE = 5000;
 
-    private final SerialController controller;
+    private final ASerialController controller;
     private final DriverParameters parameters;
     private final double conversionRatio;
     private final Function<Position, Integer> position2Signal;
 
     public SerialServoDriver(Servo servo, StopWatch stopWatch, DriverParameters parameters) {
         super(servo, stopWatch);
-        this.controller = new SerialController(servo.getSerial());
+        this.controller = servo.getSerialMode().getController(servo.getSerial());
         this.parameters = parameters;
         this.conversionRatio = servo.getTransmissionRatio() * SERVO_SIGNAL_RANGE;
         this.position2Signal = servo.getControlMode().getPosition2SignalConverter();

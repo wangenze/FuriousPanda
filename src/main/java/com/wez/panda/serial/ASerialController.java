@@ -7,19 +7,17 @@ import processing.serial.Serial;
 import java.util.concurrent.TimeUnit;
 
 @AllArgsConstructor
-public class SerialController {
+public abstract class ASerialController {
 
     @NonNull
     private final Serial serial;
 
     public synchronized void send(int signal) {
 //        System.out.println("Writing signal: " + signal);
-        sequentialWrite(0x50, (signal >> 24) & 0xFF, (signal >> 16) & 0xFF);
-        delay(10L);
-
-        sequentialWrite(0x05, (signal >> 8) & 0xFF, signal & 0xFF);
-        delay(10L);
+        sendSignal(signal);
     }
+
+    protected abstract void sendSignal(int signal);
 
     void sequentialWrite(int a, int b, int c) {
         serial.write(a);
@@ -36,7 +34,7 @@ public class SerialController {
         return (int) (sum & 0xFF);
     }
 
-    private void delay(long millis) {
+    void delay(long millis) {
         try {
             TimeUnit.MILLISECONDS.sleep(millis);
         } catch (InterruptedException e) {

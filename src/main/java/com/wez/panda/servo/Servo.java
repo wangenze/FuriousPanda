@@ -1,5 +1,6 @@
 package com.wez.panda.servo;
 
+import com.wez.panda.serial.SerialMode;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -16,8 +17,11 @@ public class Servo {
 
     private double offsetDegrees;
     private double transmissionRatio;
-    private Serial serial;
+
     private ControlMode controlMode;
+
+    private Serial serial;
+    private SerialMode serialMode;
 
     public static Builder builder() {
         return new Builder();
@@ -29,8 +33,10 @@ public class Servo {
         private String dataFilePath;
         private double offsetDegrees = 0d;
         private double transmissionRatio = 1d;
-        private Serial serial = null;
         private ControlMode controlMode = ControlMode.RELATIVE;
+
+        private Serial serial = null;
+        private SerialMode serialMode = SerialMode.DISPLACEMENT;
 
         public Builder name(String name) {
             this.name = name;
@@ -52,20 +58,26 @@ public class Servo {
             return this;
         }
 
-        public Builder serial(Serial serial) {
-            this.serial = serial;
-            return this;
-        }
 
         public Builder controlMode(ControlMode controlMode) {
             this.controlMode = controlMode;
             return this;
         }
 
+        public Builder serial(Serial serial) {
+            this.serial = serial;
+            return this;
+        }
+
+        public Builder serialMode(SerialMode serialMode) {
+            this.serialMode = serialMode;
+            return this;
+        }
+
         public Servo build() {
             Validate.notEmpty(name);
             Validate.notEmpty(dataFilePath);
-            return new Servo(name, dataFilePath, offsetDegrees, transmissionRatio, serial, controlMode);
+            return new Servo(name, dataFilePath, offsetDegrees, transmissionRatio, controlMode, serial, serialMode);
         }
     }
 }
