@@ -13,7 +13,6 @@ public abstract class ASerialController {
     private final Serial serial;
 
     public synchronized void send(int signal) {
-//        System.out.println("Writing signal: " + signal);
         sendSignal(signal);
     }
 

@@ -11,10 +11,7 @@ public class VelocityController extends ASerialController {
 
     @Override
     protected void sendSignal(int signal) {
-        sequentialWrite(0x50, (signal >> 24) & 0xFF, (signal >> 16) & 0xFF);
-        delay(10L);
-
-        sequentialWrite(0x05, (signal >> 8) & 0xFF, signal & 0xFF);
+        sequentialWrite(0x06, (signal >> 8) & 0xFF, signal & 0xFF);
         delay(10L);
     }
 }
