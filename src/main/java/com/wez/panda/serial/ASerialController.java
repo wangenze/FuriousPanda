@@ -2,18 +2,32 @@ package com.wez.panda.serial;
 
 import lombok.AllArgsConstructor;
 import lombok.NonNull;
+import lombok.extern.log4j.Log4j2;
 import processing.serial.Serial;
 
 import java.util.concurrent.TimeUnit;
 
+@Log4j2
 @AllArgsConstructor
 public abstract class ASerialController {
 
     @NonNull
     private final Serial serial;
 
-    public synchronized void send(int signal) {
-        sendSignal(signal);
+    public void send(int signal) {
+        synchronized (serial) {
+            sendSignal(signal);
+        }
+    }
+
+    public int receive() {
+        synchronized (serial) {
+            return receiveSignal();
+        }
+    }
+
+    protected int receiveSignal() {
+        return 0;
     }
 
     protected abstract void sendSignal(int signal);
@@ -33,9 +47,9 @@ public abstract class ASerialController {
         return (int) (sum & 0xFF);
     }
 
-    void delay(long millis) {
+    void delay() {
         try {
-            TimeUnit.MILLISECONDS.sleep(millis);
+            TimeUnit.MILLISECONDS.sleep(10);
         } catch (InterruptedException e) {
             e.printStackTrace(); //NOSONAR
             Thread.currentThread().interrupt();

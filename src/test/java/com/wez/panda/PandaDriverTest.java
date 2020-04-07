@@ -51,8 +51,8 @@ public class PandaDriverTest {
         }
 
         @Override
-        protected void operate(double posAfterApplyingOffset) throws InterruptedException {
-            System.out.println(String.format("Servo %s operating to position %.3f", getServo().getName(), posAfterApplyingOffset));
+        protected void operate(double timeSec) throws InterruptedException {
+            System.out.println(String.format("Servo %s operating to position %.3f", getServo().getName(), getPosAfterApplyingOffset(timeSec)));
             TimeUnit.MILLISECONDS.sleep(100);
         }
     }

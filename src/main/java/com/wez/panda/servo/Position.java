@@ -4,6 +4,6 @@ import lombok.Value;
 
 @Value
 public class Position {
-    private int pos;
-    private int step;
+    int pos;
+    int step;
 }

@@ -37,7 +37,7 @@ public abstract class AServoDriver implements IServoDriver {
     @Override
     public void initialize() {
         try {
-            syncOperate(getData().value(0));
+            syncOperate(0.0);
         } catch (InterruptedException ie) {
             Thread.currentThread().interrupt();
         }
@@ -48,7 +48,7 @@ public abstract class AServoDriver implements IServoDriver {
         // Starting from initial position
         while (!terminated.get() && !Thread.currentThread().isInterrupted()) {
             try {
-                syncOperate(getData().value(now()));
+                syncOperate(now());
             } catch (InterruptedException ie) {
                 Thread.currentThread().interrupt();
             }
@@ -60,10 +60,14 @@ public abstract class AServoDriver implements IServoDriver {
         terminated.set(true);
     }
 
-    protected abstract void operate(double posAfterApplyingOffset) throws InterruptedException;
+    protected abstract void operate(double timeSec) throws InterruptedException;
 
-    private synchronized void syncOperate(double pos) throws InterruptedException {
-        this.operate(pos + servo.getOffsetDegrees());
+    protected double getPosAfterApplyingOffset(double timeSec) {
+        return getData().value(timeSec) + servo.getOffsetDegrees();
+    }
+
+    private synchronized void syncOperate(double timeSec) throws InterruptedException {
+        this.operate(timeSec);
     }
 
     private UnivariateFunction loadData() {
@@ -72,7 +76,7 @@ public abstract class AServoDriver implements IServoDriver {
         return dataConverter.convert(rawData);
     }
 
-    private double now() {
+    protected double now() {
         return stopWatch.getNanoTime() / NANOS_PER_SEC;
     }
 }

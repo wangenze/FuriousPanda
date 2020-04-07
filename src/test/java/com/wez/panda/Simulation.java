@@ -88,8 +88,8 @@ public class Simulation extends PApplet {
         }
 
         @Override
-        protected void operate(double posAfterApplyingOffset) throws InterruptedException {
-            STATUS.put(getServo(), FastMath.toRadians(posAfterApplyingOffset));
+        protected void operate(double timeSec) throws InterruptedException {
+            STATUS.put(getServo(), FastMath.toRadians(getPosAfterApplyingOffset(timeSec)));
         }
     }
 }

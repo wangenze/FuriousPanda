@@ -45,8 +45,8 @@ public class SerialServoDriver extends AServoDriver {
     }
 
     @Override
-    protected void operate(double posWithOffset) throws InterruptedException {
-        Position position = calculatePosition(posWithOffset);
+    protected void operate(double timeSec) throws InterruptedException {
+        Position position = calculatePosition(timeSec);
         if (position.getStep() != 0) {
             int signal = position2Signal.apply(position);
             controller.send(signal);
@@ -54,7 +54,8 @@ public class SerialServoDriver extends AServoDriver {
         delay(parameters.getMinInterval());
     }
 
-    private Position calculatePosition(final double targetAngle) {
+    private Position calculatePosition(final double timeSec) {
+        double targetAngle = getPosAfterApplyingOffset(timeSec);
         return current.updateAndGet(currentPos -> getNewPosition(targetAngle, currentPos));
     }
 
