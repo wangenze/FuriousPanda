@@ -5,6 +5,7 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.LineIterator;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Validate;
 import org.apache.commons.math3.util.Pair;
 
 import java.io.File;
@@ -20,7 +21,8 @@ import java.util.List;
 public class DataFileLoader {
 
     public List<Pair<Double, Double>> loadRawData(String dataFilePath) {
-        File dataFile = getFile(dataFilePath);
+        File dataFile = Validate.notNull(getFile(dataFilePath), "Unable to load file: %s", dataFilePath);
+        Validate.validState(dataFile.exists(), "File does not exist: %s", dataFilePath);
         final List<Pair<Double, Double>> data = new ArrayList<>();
         final LineIterator lineIterator;
         try {
