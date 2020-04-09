@@ -2,7 +2,9 @@ package com.wez.panda;
 
 import com.wez.panda.servo.Servo;
 import com.wez.panda.servo.driver.AServoDriver;
+import com.wez.panda.servo.driver.DriverParameters;
 import com.wez.panda.servo.driver.IServoDriver;
+import com.wez.panda.servo.driver.ServoDriverFactory;
 import org.apache.commons.lang3.time.StopWatch;
 import org.junit.Test;
 
@@ -15,7 +17,12 @@ public class PandaDriverTest {
     public void testPandaDriver() throws Exception {
         PandaDriver pandaDriver = PandaDriver.builder()
                 .servos(Resources.getAllServosForTesting())
-                .servoDriverFactory(MockingServoDriver::new)
+                .servoDriverFactory(new ServoDriverFactory(){
+                    @Override
+                    public AServoDriver getServoDriver(Servo servo, StopWatch sw, DriverParameters parameters) {
+                        return new MockingServoDriver(servo, sw);
+                    }
+                })
                 .build();
         // Start
         pandaDriver.start();
@@ -37,7 +44,12 @@ public class PandaDriverTest {
     public void testSingleServo() throws Exception {
         PandaDriver pandaDriver = PandaDriver.builder()
                 .servos(Collections.singletonList(Servo.builder().name("LB_KN").dataFilePath("LB_KN.csv").build()))
-                .servoDriverFactory(IServoDriver.EmptyDriver::new)
+                .servoDriverFactory(new ServoDriverFactory(){
+                    @Override
+                    public IServoDriver getServoDriver(Servo servo, StopWatch sw, DriverParameters parameters) {
+                        return new IServoDriver.EmptyDriver();
+                    }
+                })
                 .build();
         // Start
         pandaDriver.start();

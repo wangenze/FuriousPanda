@@ -79,4 +79,13 @@ public abstract class AServoDriver implements IServoDriver {
     protected double now() {
         return stopWatch.getNanoTime() / NANOS_PER_SEC;
     }
+
+    protected void delay(long millis) {
+        try {
+            TimeUnit.MILLISECONDS.sleep(millis);
+        } catch (InterruptedException e) {
+            e.printStackTrace(); //NOSONAR
+            Thread.currentThread().interrupt();
+        }
+    }
 }

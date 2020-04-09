@@ -2,6 +2,8 @@ package com.wez.panda;
 
 import com.wez.panda.servo.Servo;
 import com.wez.panda.servo.driver.AServoDriver;
+import com.wez.panda.servo.driver.DriverParameters;
+import com.wez.panda.servo.driver.ServoDriverFactory;
 import one.util.streamex.StreamEx;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.StopWatch;
@@ -31,7 +33,12 @@ public class Simulation extends PApplet {
         size(1000, 800);
         pandaDriver = PandaDriver.builder()
                 .servos(Resources.getAllServosForTesting())
-                .servoDriverFactory(MockingServoDriver::new)
+                .servoDriverFactory(new ServoDriverFactory() {
+                    @Override
+                    public AServoDriver getServoDriver(Servo servo, StopWatch sw, DriverParameters parameters) {
+                        return new MockingServoDriver(servo, sw);
+                    }
+                })
                 .build();
         pandaDriver.start();
         lines.addAll(StreamEx.of(pandaDriver.getServos()).map(Line::new).toList());

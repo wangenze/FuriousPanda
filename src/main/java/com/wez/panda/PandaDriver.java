@@ -3,7 +3,7 @@ package com.wez.panda;
 import com.wez.panda.servo.Servo;
 import com.wez.panda.servo.driver.DriverParameters;
 import com.wez.panda.servo.driver.IServoDriver;
-import com.wez.panda.servo.driver.SerialServoDriver;
+import com.wez.panda.servo.driver.ServoDriverFactory;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NonNull;
@@ -17,7 +17,6 @@ import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
-import java.util.function.BiFunction;
 
 import static com.wez.panda.servo.driver.DriverParameters.DEFAULT_PARAMETERS;
 
@@ -28,7 +27,9 @@ public class PandaDriver {
     @NonNull
     private List<Servo> servos;
     @NonNull
-    private BiFunction<Servo, StopWatch, IServoDriver> servoDriverFactory;
+    private ServoDriverFactory servoDriverFactory;
+    @NonNull
+    private DriverParameters driverParameters;
 
     private ExecutorService executorService = null;
     private Set<IServoDriver> drivers = new HashSet<>();
@@ -54,7 +55,7 @@ public class PandaDriver {
             stopWatch.reset();
             drivers.clear();
             for (Servo servo : servos) {
-                IServoDriver servoDriver = servoDriverFactory.apply(servo, stopWatch);
+                IServoDriver servoDriver = servoDriverFactory.getServoDriver(servo, stopWatch, driverParameters);
                 drivers.add(servoDriver);
             }
             drivers.stream().parallel().forEach(IServoDriver::initialize);
@@ -106,13 +107,9 @@ public class PandaDriver {
     }
 
     public static class Builder {
+
         private DriverParameters driverParameters = DEFAULT_PARAMETERS;
-        private BiFunction<Servo, StopWatch, IServoDriver> servoDriverFactory =
-                (servo, stopWatch) -> SerialServoDriver.builder()
-                        .servo(servo)
-                        .stopWatch(stopWatch)
-                        .parameters(driverParameters)
-                        .build();
+        private ServoDriverFactory servoDriverFactory = new ServoDriverFactory();
         private List<Servo> servos;
 
         public Builder driverParameters(DriverParameters driverParameters) {
@@ -120,7 +117,7 @@ public class PandaDriver {
             return this;
         }
 
-        public Builder servoDriverFactory(BiFunction<Servo, StopWatch, IServoDriver> servoDriverFactory) {
+        public Builder servoDriverFactory(ServoDriverFactory servoDriverFactory) {
             this.servoDriverFactory = servoDriverFactory;
             return this;
         }
@@ -132,7 +129,7 @@ public class PandaDriver {
 
         public PandaDriver build() {
             Validate.notEmpty(servos);
-            return new PandaDriver(servos, servoDriverFactory);
+            return new PandaDriver(servos, servoDriverFactory, driverParameters);
         }
     }
 }

@@ -3,12 +3,10 @@ package com.wez.panda.servo.driver;
 import com.wez.panda.serial.VelocityController;
 import com.wez.panda.servo.Servo;
 import com.wez.panda.servo.Snapshot;
-import org.apache.commons.lang3.Validate;
 import org.apache.commons.lang3.time.StopWatch;
 import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 import org.apache.commons.math3.util.MathUtils;
 
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
 import static com.wez.panda.math.RotatingAngleInterpolator.HALF_PERIOD;
@@ -19,7 +17,7 @@ import static org.apache.commons.math3.util.FastMath.max;
 import static org.apache.commons.math3.util.FastMath.min;
 import static org.apache.commons.math3.util.FastMath.round;
 
-public class ClosedLoopSerialServoDriver extends AServoDriver {
+public class VelocityServoDriver extends AServoDriver {
 
     private static final double FORWARD_LOOKING_TIME_SEC = 0.5;
     private static final double ADJUST_KD_COEFFICIENT = 1.0; // not bigger than 1.0
@@ -39,15 +37,11 @@ public class ClosedLoopSerialServoDriver extends AServoDriver {
     private DescriptiveStatistics kVas = new DescriptiveStatistics(MOVING_AVG_WINDOW);
 
 
-    public ClosedLoopSerialServoDriver(Servo servo, StopWatch stopWatch, DriverParameters parameters) {
+    public VelocityServoDriver(Servo servo, StopWatch stopWatch, DriverParameters parameters) {
         super(servo, stopWatch);
         this.controller = new VelocityController(servo.getSerial());
         this.parameters = parameters;
         this.conversionRatio = servo.getTransmissionRatio() * SERVO_SIGNAL_RANGE;
-    }
-
-    public static Builder builder() {
-        return new Builder();
     }
 
     @Override
@@ -106,49 +100,7 @@ public class ClosedLoopSerialServoDriver extends AServoDriver {
 
     private Snapshot getActualAngle() {
         double timeSec = now();
-        double angle = MathUtils.reduce(controller.receive() * PERIOD / conversionRatio, PERIOD, 0d);
+        double angle = MathUtils.reduce(controller.readPositionFeedback() * PERIOD / conversionRatio, PERIOD, 0d);
         return new Snapshot(angle, timeSec);
-    }
-
-    private void delay(long millis) {
-        try {
-            TimeUnit.MILLISECONDS.sleep(millis);
-        } catch (InterruptedException e) {
-            e.printStackTrace(); //NOSONAR
-            Thread.currentThread().interrupt();
-        }
-    }
-
-
-    public static final class Builder {
-
-        private Servo servo;
-        private StopWatch stopWatch;
-        private DriverParameters parameters;
-
-
-        private Builder() {
-        }
-
-        public Builder servo(Servo servo) {
-            this.servo = servo;
-            return this;
-        }
-
-        public Builder stopWatch(StopWatch stopWatch) {
-            this.stopWatch = stopWatch;
-            return this;
-        }
-
-        public Builder parameters(DriverParameters parameters) {
-            this.parameters = parameters;
-            return this;
-        }
-
-        public ClosedLoopSerialServoDriver build() {
-            Validate.notNull(servo);
-            Validate.notNull(parameters);
-            return new ClosedLoopSerialServoDriver(servo, stopWatch == null ? new StopWatch() : stopWatch, parameters);
-        }
     }
 }
